@@ -1,0 +1,8 @@
+Pull all the files
+1.start run train_model.py
+2.the place a correct folder then run the App.py
+when the terminal shows https:some address click it .go to advance and click to proceed
+3.Then the web app run in your sensor detect in risk of a rider behaviour
+4. if run the streamlit app
+    --->streamlit run streamlit_app.py
+5. deploy in hugging face
