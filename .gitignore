@@ -1,0 +1,22 @@
+.claude/*.json
+data/kaggle/*.csv
+data/motorcycle/*.csv
+data/motorcycle/falls/Fall in a curve/*.csv
+data/motorcycle/falls/Fall in the roundabout/*.csv
+data/motorcycle/falls/Fall on a slippery straight road section/*.csv
+data/motorcycle/falls/Fall with leaning of the motorcycle/*.csv
+data/motorcycle/manoeuvres/Acceleration On Curve/*.csv
+data/motorcycle/manoeuvres/Acceleration On Straight Line/*.csv
+data/motorcycle/manoeuvres/Fall Like manoeuvre 1/*.csv
+data/motorcycle/manoeuvres/Fall Like manoeuvre 2/*.csv
+data/motorcycle/manoeuvres/Fall Like manoeuvre 3/*.csv
+data/motorcycle/manoeuvres/Fall Like manoeuvre 4/*.csv
+data/motorcycle/manoeuvres/Harsh breaking On Straight Line/*.csv
+data/motorcycle/manoeuvres/Much degraded track/*.csv
+data/nairobi/*.csv
+ml/__pycache__/
+ml/venv/
+models/*.png
+models/*.pkl
+
+

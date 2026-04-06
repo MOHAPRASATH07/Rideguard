@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RideGuard</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f7f4;--s:#fff;--s2:#f2f1ee;
+  --b:#e8e6e1;--b2:#d4d1cb;
+  --t:#1a1917;--t2:#6b6860;--t3:#9b9890;
+  --g:#16a34a;--gb:#f0fdf4;--gbd:#bbf7d0;
+  --a:#d97706;--ab:#fffbeb;--abd:#fde68a;
+  --r:#dc2626;--rb:#fef2f2;--rbd:#fecaca;
+  --bl:#2563eb;--blb:#eff6ff;--blbd:#bfdbfe;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Outfit',sans-serif;
+  --rad:12px;--radl:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--t);font-family:var(--sans);font-size:15px;min-height:100vh;}
+nav{background:var(--s);border-bottom:1px solid var(--b);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.brand{display:flex;align-items:center;gap:9px;}
+.logo{width:30px;height:30px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.logo svg{width:16px;height:16px;}
+.bname{font-size:16px;font-weight:700;letter-spacing:-.3px;}
+.npill{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);background:var(--s2);border:1px solid var(--b);border-radius:99px;padding:4px 11px;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 80px;}
+.hero{margin-bottom:24px;}
+.hero h1{font-size:24px;font-weight:700;letter-spacing:-.4px;margin-bottom:3px;}
+.hero p{color:var(--t2);font-size:13px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.stc{background:var(--s);border:1px solid var(--b);border-radius:var(--rad);padding:12px 14px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,0.04);}
+.stv{font-family:var(--mono);font-size:20px;font-weight:700;line-height:1;margin-bottom:2px;}
+.stl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;}
+.bike-bar{background:var(--s);border:1px solid var(--b);border-radius:var(--radl);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:18px;box-shadow:0 1px 2px rgba(0,0,0,0.04);flex-wrap:wrap;}
+.bike-bar label{font-size:11px;font-weight:600;color:var(--t2);letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;}
+.bike-in{flex:1;min-width:150px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--rad);padding:8px 11px;font-family:var(--sans);font-size:14px;color:var(--t);outline:none;}
+.bike-in:focus{border-color:var(--t);}
+.bstat{display:flex;flex-direction:column;align-items:center;background:var(--s2);border:1px solid var(--b);border-radius:var(--rad);padding:7px 16px;}
+.bsv{font-size:18px;font-weight:700;font-family:var(--mono);line-height:1;}
+.bsl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+.bsv-in{font-size:18px;font-weight:700;font-family:var(--mono);width:60px;background:transparent;border:none;text-align:center;color:var(--t);outline:none;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+@media(max-width:680px){.g2{grid-template-columns:1fr;}.stats{grid-template-columns:1fr 1fr;}}
+.card{background:var(--s);border:1px solid var(--b);border-radius:var(--radl);padding:20px;box-shadow:0 1px 2px rgba(0,0,0,0.04);}
+.ctag{font-size:10px;font-weight:600;color:var(--t2);letter-spacing:1px;text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:7px;}
+.lchip{display:inline-flex;align-items:center;gap:4px;background:var(--blb);border:1px solid var(--blbd);border-radius:99px;padding:2px 7px;font-size:9px;color:var(--bl);font-weight:600;}
+
+/* SPEED BOX */
+.spd-box{background:var(--s2);border:1px solid var(--b);border-radius:var(--rad);padding:12px 14px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;}
+.spd-left{display:flex;align-items:baseline;gap:4px;}
+.spd-num{font-size:36px;font-weight:700;font-family:var(--mono);color:var(--bl);line-height:1;transition:color .3s;}
+.spd-unit{font-size:12px;color:var(--t3);}
+.spd-right{text-align:right;}
+.spd-status{font-size:11px;color:var(--t3);}
+.spd-acc{font-size:10px;color:var(--t3);margin-top:2px;}
+
+/* SENSOR GRID */
+.sg{margin-bottom:13px;}
+.sgl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:7px;}
+.sr{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;}
+.sf label{display:block;font-size:9px;font-weight:600;color:var(--t2);font-family:var(--mono);margin-bottom:3px;}
+.sv{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:8px 8px;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t);text-align:center;transition:all .2s;outline:none;}
+.sv:focus{border-color:var(--t);background:var(--s);}
+.sv.flash{border-color:var(--g);background:var(--gb);}
+
+/* BUTTONS */
+.brow{display:flex;gap:6px;}
+.btn{flex:1;padding:10px 11px;border-radius:9px;font-family:var(--sans);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;}
+.bp{background:var(--t);color:#fff;}
+.bp:hover{background:#333;transform:translateY(-1px);}
+.bp:disabled{background:var(--b2);cursor:not-allowed;transform:none;}
+.bs{background:var(--s2);color:var(--t);border:1px solid var(--b2);}
+.bs:hover{border-color:var(--t);}
+.bbl{background:var(--blb);color:var(--bl);border:1px solid var(--blbd);}
+.bbl.on{background:var(--bl);color:#fff;border-color:var(--bl);}
+
+.winrow{display:flex;align-items:center;gap:7px;margin-top:11px;padding-top:11px;border-top:1px solid var(--b);}
+.winl{font-size:10px;color:var(--t3);}
+.windots{display:flex;gap:3px;}
+.wd{width:7px;height:7px;border-radius:2px;background:var(--b2);transition:background .3s;}
+.wd.on{background:var(--g);}
+.note{background:var(--blb);border:1px solid var(--blbd);border-radius:9px;padding:9px 12px;font-size:11px;color:var(--bl);line-height:1.6;margin-top:11px;}
+
+/* GAUGE */
+.gctr{text-align:center;}
+.gw{position:relative;width:148px;height:148px;margin:0 auto 13px;display:flex;align-items:center;justify-content:center;}
+.gw svg{position:absolute;top:0;left:0;width:100%;height:100%;transform:rotate(-90deg);}
+.gi{position:relative;z-index:1;text-align:center;}
+.gnum{font-size:38px;font-weight:700;font-family:var(--mono);line-height:1;letter-spacing:-2px;}
+.gsub{font-size:9px;color:var(--t3);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.lbadge{display:inline-block;padding:4px 16px;border-radius:99px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+.bl2{background:var(--gb);color:var(--g);border:1px solid var(--gbd);}
+.bm{background:var(--ab);color:var(--a);border:1px solid var(--abd);}
+.bh{background:var(--rb);color:var(--r);border:1px solid var(--rbd);}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:3px 9px;border-radius:6px;margin-top:5px;}
+.cw{background:var(--rb);color:var(--r);border:1px solid var(--rbd);}
+.co{background:var(--gb);color:var(--g);border:1px solid var(--gbd);}
+.pr{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.pl{font-size:11px;font-weight:600;color:var(--t2);width:60px;}
+.pt{flex:1;height:5px;background:var(--s2);border-radius:99px;overflow:hidden;border:1px solid var(--b);}
+.pf{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.pp{font-size:11px;font-family:var(--mono);font-weight:600;width:30px;text-align:right;}
+
+/* MILEAGE */
+.mh{display:flex;align-items:center;gap:12px;padding:12px;background:var(--s2);border-radius:var(--rad);margin-bottom:12px;border:1px solid var(--b);}
+.ering{width:58px;height:58px;border-radius:50%;border:3px solid var(--g);display:flex;align-items:center;justify-content:center;flex-direction:column;flex-shrink:0;transition:border-color .4s;}
+.enum{font-family:var(--mono);font-size:17px;font-weight:700;line-height:1;transition:color .4s;}
+.elbl{font-size:8px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;}
+.ei h4{font-size:13px;font-weight:600;margin-bottom:2px;}
+.ei p{font-size:11px;color:var(--t2);line-height:1.5;}
+.kg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:11px;}
+.kb{background:var(--s2);border:1px solid var(--b);border-radius:var(--rad);padding:10px;text-align:center;}
+.kl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.kv{font-family:var(--mono);font-size:20px;font-weight:700;}
+.ku{font-size:9px;color:var(--t3);}
+.tip{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--b);font-size:12px;color:var(--t2);line-height:1.5;}
+.tip:last-child{border:none;}
+.tdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.erow{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--b);}
+.erow:last-child{border:none;}
+.en{font-size:10px;font-weight:700;color:var(--t3);width:14px;font-family:var(--mono);}
+.ed{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.et{font-size:12px;color:var(--t);}
+.minfo{margin-top:12px;padding-top:12px;border-top:1px solid var(--b);font-size:10px;color:var(--t3);line-height:1.8;}
+.hr2{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--b);}
+.hr2:last-child{border:none;}
+.ht{font-size:10px;font-family:var(--mono);color:var(--t3);width:60px;}
+.hs{font-family:var(--mono);font-size:13px;font-weight:700;width:28px;}
+.htr{flex:1;height:4px;background:var(--s2);border-radius:99px;overflow:hidden;}
+.hf{height:100%;border-radius:99px;}
+.hl{font-size:9px;font-weight:700;width:66px;text-align:right;letter-spacing:.5px;}
+.hk{font-size:10px;font-family:var(--mono);color:var(--g);width:46px;text-align:right;}
+.idle{text-align:center;padding:22px 0;color:var(--t3);}
+.ii{font-size:28px;opacity:.2;margin-bottom:6px;}
+.idle p{font-size:12px;}
+
+/* LIVE SENSOR INDICATORS */
+.sensor-live{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:11px;}
+.sl-item{background:var(--s2);border:1px solid var(--b);border-radius:7px;padding:6px 8px;text-align:center;}
+.sl-label{font-size:9px;color:var(--t3);text-transform:uppercase;margin-bottom:2px;}
+.sl-val{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t);}
+.sl-val.alert{color:var(--r);}
+.sl-val.warn{color:var(--a);}
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>
+      </svg>
+    </div>
+    <span class="bname">RideGuard</span>
+  </div>
+  <div class="npill">
+    <div class="dot"></div>
+    <span id="api-status">API Connected</span>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>Riding Risk & Mileage Monitor</h1>
+    <p>Real-time two-wheeler safety and fuel efficiency using ML</p>
+  </div>
+
+  <div class="stats" id="stats" style="display:none;">
+    <div class="stc"><div class="stv" id="s-n">0</div><div class="stl">Predictions</div></div>
+    <div class="stc"><div class="stv" id="s-r">—</div><div class="stl">Avg Risk</div></div>
+    <div class="stc"><div class="stv" id="s-k" style="color:var(--g);">—</div><div class="stl">Avg kmpl</div></div>
+    <div class="stc"><div class="stv" id="s-a" style="color:var(--r);">0</div><div class="stl">High Alerts</div></div>
+  </div>
+
+  <div class="bike-bar">
+    <label>Bike</label>
+    <input type="text" class="bike-in" id="bike-name" value="Honda Activa" placeholder="Your bike name">
+    <div class="bstat">
+      <div class="bsl">Base kmpl</div>
+      <input type="number" class="bsv-in" id="base-kmpl" value="60" min="10" max="120">
+    </div>
+    <div class="bstat">
+      <div class="bsl">Engine cc</div>
+      <input type="number" class="bsv-in" id="bike-cc" value="110" min="0" max="1000">
+    </div>
+  </div>
+
+  <div class="g2">
+    <!-- INPUT -->
+    <div class="card">
+      <div class="ctag">
+        Sensor Input
+        <span class="lchip" id="lchip" style="display:none;"><div class="dot"></div>Live</span>
+      </div>
+
+      <!-- GPS SPEED -->
+      <div class="spd-box">
+        <div class="spd-left">
+          <div class="spd-num" id="spd-num">0</div>
+          <div class="spd-unit">kmph</div>
+        </div>
+        <div class="spd-right">
+          <div class="spd-status" id="spd-status">Tap sensor to start GPS</div>
+          <div class="spd-acc" id="spd-acc"></div>
+        </div>
+      </div>
+      <input type="hidden" id="speed-val" value="0">
+
+      <!-- LIVE SENSOR INDICATORS -->
+      <div class="sensor-live" id="sensor-live" style="display:none;">
+        <div class="sl-item">
+          <div class="sl-label">Accel Mag</div>
+          <div class="sl-val" id="sl-am">0.00</div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-label">Gyro Mag</div>
+          <div class="sl-val" id="sl-gm">0.00</div>
+        </div>
+        <div class="sl-item">
+          <div class="sl-label">Jerk</div>
+          <div class="sl-val" id="sl-jk">0.00</div>
+        </div>
+      </div>
+
+      <!-- RAW SENSOR VALUES (collapsed by default) -->
+      <details style="margin-bottom:11px;">
+        <summary style="font-size:11px;color:var(--t2);cursor:pointer;padding:4px 0;">Raw sensor values</summary>
+        <div style="margin-top:8px;">
+          <div class="sg">
+            <div class="sgl">Accelerometer (m/s² — gravity removed)</div>
+            <div class="sr">
+              <div class="sf"><label>ACCEL_X</label><input type="number" class="sv" id="v-ax" value="0.00" step="0.01" readonly></div>
+              <div class="sf"><label>ACCEL_Y</label><input type="number" class="sv" id="v-ay" value="0.00" step="0.01" readonly></div>
+              <div class="sf"><label>ACCEL_Z</label><input type="number" class="sv" id="v-az" value="0.00" step="0.01" readonly></div>
+            </div>
+          </div>
+          <div class="sg">
+            <div class="sgl">Gyroscope (rad/s)</div>
+            <div class="sr">
+              <div class="sf"><label>GYRO_X</label><input type="number" class="sv" id="v-gx" value="0.00" step="0.01" readonly></div>
+              <div class="sf"><label>GYRO_Y</label><input type="number" class="sv" id="v-gy" value="0.00" step="0.01" readonly></div>
+              <div class="sf"><label>GYRO_Z</label><input type="number" class="sv" id="v-gz" value="0.00" step="0.01" readonly></div>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <div class="brow">
+        <button class="btn bbl" id="btn-sensor" onclick="toggleSensor()">Start Sensors</button>
+        <button class="btn bs" onclick="resetAll()">Reset</button>
+        <button class="btn bp" id="btn-predict" onclick="predict()">Predict</button>
+      </div>
+
+      <div class="winrow">
+        <span class="winl">Smoothing</span>
+        <div class="windots">
+          <div class="wd" id="wd0"></div><div class="wd" id="wd1"></div>
+          <div class="wd" id="wd2"></div><div class="wd" id="wd3"></div>
+          <div class="wd" id="wd4"></div>
+        </div>
+        <span class="winl" id="wtxt">0/5</span>
+      </div>
+
+      <div class="note">
+        Open on Android at <strong>https://YOUR_IP:5000</strong> — tap <strong>Start Sensors</strong> — allow motion + location.
+      </div>
+    </div>
+
+    <!-- RISK -->
+    <div class="card">
+      <div class="ctag">Risk Score</div>
+      <div id="risk-idle" class="idle"><div class="ii">◎</div><p>Tap Predict to start</p></div>
+      <div id="risk-res" style="display:none;">
+        <div class="gctr">
+          <div class="gw">
+            <svg viewBox="0 0 148 148">
+              <circle cx="74" cy="74" r="64" fill="none" stroke="#f2f1ee" stroke-width="10"/>
+              <circle id="garc" cx="74" cy="74" r="64" fill="none" stroke="#16a34a" stroke-width="10"
+                stroke-linecap="round" stroke-dasharray="402" stroke-dashoffset="402"
+                style="transition:stroke-dashoffset .8s cubic-bezier(.34,1.56,.64,1),stroke .4s;"/>
+            </svg>
+            <div class="gi">
+              <div class="gnum" id="gnum">0</div>
+              <div class="gsub">Risk %</div>
+            </div>
+          </div>
+          <div class="lbadge bl2" id="lvlbadge">LOW</div><br>
+          <div id="anomout"></div>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="pr"><div class="pl">Low</div><div class="pt"><div class="pf" id="pfl" style="width:0%;background:var(--g);"></div></div><div class="pp" id="ppl">0%</div></div>
+          <div class="pr"><div class="pl">Moderate</div><div class="pt"><div class="pf" id="pfm" style="width:0%;background:var(--a);"></div></div><div class="pp" id="ppm">0%</div></div>
+          <div class="pr"><div class="pl">High</div><div class="pt"><div class="pf" id="pfh" style="width:0%;background:var(--r);"></div></div><div class="pp" id="pph">0%</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <!-- MILEAGE -->
+    <div class="card">
+      <div class="ctag">Mileage Efficiency</div>
+      <div id="mile-idle" class="idle" style="padding:16px 0;"><div class="ii">⟳</div><p>Appears after prediction</p></div>
+      <div id="mile-res" style="display:none;">
+        <div class="mh">
+          <div class="ering" id="ering">
+            <div class="enum" id="epct">0</div>
+            <div class="elbl">Eco%</div>
+          </div>
+          <div class="ei">
+            <h4 id="etitle">—</h4>
+            <p id="edesc">—</p>
+          </div>
+        </div>
+        <div class="kg">
+          <div class="kb"><div class="kl">Current Riding</div><div class="kv" id="kcur">—</div><div class="ku">kmpl</div></div>
+          <div class="kb"><div class="kl">Smooth Riding</div><div class="kv" style="color:var(--g);" id="kpot">—</div><div class="ku">kmpl</div></div>
+        </div>
+        <div style="font-size:10px;color:var(--t2);margin-bottom:7px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;">What is affecting mileage</div>
+        <div id="tips-list"></div>
+        <div class="minfo">
+          <div>Model: <span id="mmodel">—</span></div>
+          <div>Rider style: <span id="mstyle">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHAP -->
+    <div class="card">
+      <div class="ctag">Why This Risk? — SHAP</div>
+      <div id="exp-idle" class="idle" style="padding:16px 0;"><div class="ii">◈</div><p>Appears after prediction</p></div>
+      <div id="explist" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="card">
+    <div class="ctag">Session History</div>
+    <div id="history"><div class="idle" style="padding:12px 0;"><p>No predictions yet</p></div></div>
+  </div>
+</div>
+
+<script>
+let sOn=false, sInt=null, gpsWatch=null;
+let lm=null, lastAmag=0;
+let hist=[], st={n:0,rs:0,ks:0,al:0};
+
+function toggleSensor(){sOn?stopS():startS();}
+
+function startS(){
+  // Request DeviceMotion permission (iOS)
+  if(typeof DeviceMotionEvent!=='undefined'&&
+     typeof DeviceMotionEvent.requestPermission==='function'){
+    DeviceMotionEvent.requestPermission()
+      .then(r=>{if(r==='granted')listenS();})
+      .catch(()=>listenS());
+  } else {
+    listenS();
+  }
+}
+
+function listenS(){
+  sOn=true;
+  document.getElementById('btn-sensor').classList.add('on');
+  document.getElementById('btn-sensor').textContent='Stop Sensors';
+  document.getElementById('lchip').style.display='inline-flex';
+  document.getElementById('sensor-live').style.display='grid';
+
+  // Listen for motion
+  window.addEventListener('devicemotion', onM, true);
+
+  // GPS speed
+  startGPS();
+
+  // Auto predict every 5 seconds
+  sInt=setInterval(()=>{if(lm)predict();},5000);
+}
+
+function stopS(){
+  sOn=false;
+  document.getElementById('btn-sensor').classList.remove('on');
+  document.getElementById('btn-sensor').textContent='Start Sensors';
+  document.getElementById('lchip').style.display='none';
+  window.removeEventListener('devicemotion', onM, true);
+  stopGPS();
+  clearInterval(sInt);
+}
+
+function startGPS(){
+  if(!navigator.geolocation){
+    document.getElementById('spd-status').textContent='GPS not available';
+    return;
+  }
+  document.getElementById('spd-status').textContent='Acquiring GPS...';
+  gpsWatch=navigator.geolocation.watchPosition(
+    pos=>{
+      const spd=pos.coords.speed;
+      const kmph=(spd!==null&&spd>=0)?Math.round(spd*3.6):0;
+      const acc=pos.coords.accuracy?Math.round(pos.coords.accuracy)+'m':'';
+
+      document.getElementById('speed-val').value=kmph;
+      document.getElementById('spd-num').textContent=kmph;
+      document.getElementById('spd-status').textContent=kmph>0?'GPS Active':'GPS Active (stationary)';
+      document.getElementById('spd-acc').textContent=acc?'Accuracy: '+acc:'';
+
+      // Color by speed
+      const col=kmph>80?'var(--r)':kmph>50?'var(--a)':'var(--bl)';
+      document.getElementById('spd-num').style.color=col;
+    },
+    err=>{
+      document.getElementById('spd-status').textContent='GPS error — speed = 0';
+      document.getElementById('speed-val').value=0;
+    },
+    {enableHighAccuracy:true,maximumAge:0,timeout:15000}
+  );
+}
+
+function stopGPS(){
+  if(gpsWatch!==null){
+    navigator.geolocation.clearWatch(gpsWatch);
+    gpsWatch=null;
+  }
+  document.getElementById('spd-status').textContent='GPS stopped';
+}
+
+function onM(e){
+  // Use acceleration WITHOUT gravity for cleaner readings
+  const a=e.acceleration;
+  const ag=e.accelerationIncludingGravity;
+  const r=e.rotationRate;
+
+  // Prefer pure acceleration, fallback to with-gravity
+  const src=a&&(a.x!==null)&&(a.x!==undefined)?a:ag;
+  if(!src)return;
+
+  const ax=src.x||0;
+  const ay=src.y||0;
+  const az=src.z||0;
+
+  const gx=r?(r.alpha||0)*Math.PI/180:0;
+  const gy=r?(r.beta||0)*Math.PI/180:0;
+  const gz=r?(r.gamma||0)*Math.PI/180:0;
+
+  const amag=Math.sqrt(ax*ax+ay*ay+az*az);
+  const gmag=Math.sqrt(gx*gx+gy*gy+gz*gz);
+  const jerk=Math.abs(amag-lastAmag);
+  lastAmag=amag;
+
+  lm={accel_x:ax,accel_y:ay,accel_z:az,gyro_x:gx,gyro_y:gy,gyro_z:gz};
+
+  // Update raw values
+  document.getElementById('v-ax').value=ax.toFixed(2);
+  document.getElementById('v-ay').value=ay.toFixed(2);
+  document.getElementById('v-az').value=az.toFixed(2);
+  document.getElementById('v-gx').value=gx.toFixed(2);
+  document.getElementById('v-gy').value=gy.toFixed(2);
+  document.getElementById('v-gz').value=gz.toFixed(2);
+
+  // Update live indicators
+  const amEl=document.getElementById('sl-am');
+  const gmEl=document.getElementById('sl-gm');
+  const jkEl=document.getElementById('sl-jk');
+
+  amEl.textContent=amag.toFixed(2);
+  gmEl.textContent=gmag.toFixed(2);
+  jkEl.textContent=jerk.toFixed(2);
+
+  // Color indicators based on two-wheeler thresholds
+  amEl.className='sl-val'+(amag>12?' alert':amag>6?' warn':'');
+  gmEl.className='sl-val'+(gmag>1.5?' alert':gmag>0.8?' warn':'');
+  jkEl.className='sl-val'+(jerk>5?' alert':jerk>3?' warn':'');
+}
+
+function getData(){
+  const d=lm&&sOn?lm:{
+    accel_x:parseFloat(document.getElementById('v-ax').value)||0,
+    accel_y:parseFloat(document.getElementById('v-ay').value)||0,
+    accel_z:parseFloat(document.getElementById('v-az').value)||0,
+    gyro_x:parseFloat(document.getElementById('v-gx').value)||0,
+    gyro_y:parseFloat(document.getElementById('v-gy').value)||0,
+    gyro_z:parseFloat(document.getElementById('v-gz').value)||0,
+  };
+  return{
+    ...d,
+    speed:    parseFloat(document.getElementById('speed-val').value)||0,
+    bike:     document.getElementById('bike-name').value||'My Bike',
+    base_kmpl:parseFloat(document.getElementById('base-kmpl').value)||45
+  };
+}
+
+function resetAll(){
+  fetch('/reset',{method:'POST'}).catch(()=>{});
+  for(let i=0;i<5;i++)document.getElementById('wd'+i).classList.remove('on');
+  document.getElementById('wtxt').textContent='0/5';
+  lastAmag=0;
+}
+
+async function predict(){
+  const btn=document.getElementById('btn-predict');
+  btn.disabled=true;btn.textContent='...';
+  const data=getData();
+  try{
+    const res=await fetch('/predict',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    });
+    const r=await res.json();
+    if(r.error)throw new Error(r.error);
+    render(r);
+    document.getElementById('api-status').textContent='API Connected';
+  }catch(e){
+    render(mock(data));
+    document.getElementById('api-status').textContent='Demo Mode';
+  }
+  btn.disabled=false;btn.textContent='Predict';
+}
+
+function mock(d){
+  const am=Math.sqrt(d.accel_x**2+d.accel_y**2+d.accel_z**2);
+  const gm=Math.sqrt(d.gyro_x**2+d.gyro_y**2+d.gyro_z**2);
+  const spd=d.speed||0;
+  const lvl=am>12||gm>1.5?'HIGH':am>6||gm>0.8?'MODERATE':'LOW';
+  const sc=lvl==='HIGH'?72:lvl==='MODERATE'?45:18;
+  const base=parseFloat(document.getElementById('base-kmpl').value)||45;
+
+  // Physics efficiency
+  let eff=1.0;
+  if(spd>80)eff-=0.30;else if(spd>60)eff-=0.15;else if(spd>50)eff-=0.08;
+  if(am>12)eff-=0.25;else if(am>9)eff-=0.15;else if(am>6)eff-=0.08;
+  if(gm>1.5)eff-=0.10;else if(gm>0.8)eff-=0.05;
+  eff=Math.max(0.35,Math.min(1.0,eff));
+
+  const kmpl=Math.round(base*eff*10)/10;
+  const tips=[];
+  if(am>6)tips.push(`Harsh acceleration — reducing mileage by ~${Math.round(am/12*25)}%`);
+  if(spd>60)tips.push(`Speed ${Math.round(spd)} kmph — reduce to 50 for best mileage`);
+  if(gm>0.8)tips.push('Sharp turns detected — smooth cornering saves fuel');
+  if(!tips.length)tips.push('Smooth riding — maintaining peak efficiency');
+
+  return{
+    risk_level:lvl,risk_score:sc,is_anomaly:gm>1.5,
+    explanation:['Sharp rotation detected','High acceleration force','Sudden movement change'],
+    window_size:1,
+    probabilities:{low:lvl==='LOW'?0.8:0.1,moderate:lvl==='MODERATE'?0.7:0.15,high:lvl==='HIGH'?0.75:0.1},
+    mileage:{
+      predicted_kmpl:kmpl,
+      potential_kmpl:Math.round(base*.95*10)/10,
+      base_kmpl:base,
+      efficiency_pct:Math.round(eff*100),
+      rider_style:'Normal Rider',
+      tips:tips,
+      model_used:'Physics-informed (SAE 2019-26-0143) + K-Means',
+      data_source:'Indian two-wheeler research'
+    }
+  };
+}
+
+function render(r){
+  ['risk-idle','mile-idle','exp-idle'].forEach(id=>document.getElementById(id).style.display='none');
+  ['risk-res','mile-res','explist'].forEach(id=>document.getElementById(id).style.display='block');
+  document.getElementById('stats').style.display='grid';
+
+  const sc=r.risk_score,lv=r.risk_level;
+  const cm={LOW:'var(--g)',MODERATE:'var(--a)',HIGH:'var(--r)'};
+  const col=cm[lv];
+
+  // Gauge
+  const arc=document.getElementById('garc');
+  arc.style.strokeDashoffset=402-(402*sc/100);
+  arc.style.stroke=col;
+  document.getElementById('gnum').textContent=sc;
+  document.getElementById('gnum').style.color=col;
+
+  // Badge
+  const b=document.getElementById('lvlbadge');
+  b.textContent=lv;
+  b.className='lbadge '+(lv==='LOW'?'bl2':lv==='MODERATE'?'bm':'bh');
+
+  // Anomaly
+  document.getElementById('anomout').innerHTML=r.is_anomaly
+    ?'<span class="chip cw">⚠ Anomaly</span>'
+    :'<span class="chip co">✓ Normal</span>';
+
+  // Probs
+  const p=r.probabilities;
+  document.getElementById('pfl').style.width=Math.round(p.low*100)+'%';
+  document.getElementById('pfm').style.width=Math.round(p.moderate*100)+'%';
+  document.getElementById('pfh').style.width=Math.round(p.high*100)+'%';
+  document.getElementById('ppl').textContent=Math.round(p.low*100)+'%';
+  document.getElementById('ppm').textContent=Math.round(p.moderate*100)+'%';
+  document.getElementById('pph').textContent=Math.round(p.high*100)+'%';
+
+  // Window
+  const ws=r.window_size||1;
+  for(let i=0;i<5;i++)document.getElementById('wd'+i).classList.toggle('on',i<ws);
+  document.getElementById('wtxt').textContent=ws+'/5';
+
+  // Mileage
+  const m=r.mileage;
+  const eff=m.efficiency_pct;
+  const mc=eff>70?'var(--g)':eff>45?'var(--a)':'var(--r)';
+  document.getElementById('epct').textContent=eff;
+  document.getElementById('epct').style.color=mc;
+  document.getElementById('ering').style.borderColor=mc;
+  document.getElementById('etitle').textContent=
+    eff>70?'Efficient Riding':eff>45?'Average Efficiency':'Poor Efficiency';
+  document.getElementById('edesc').textContent=
+    eff>70?'Smooth style — good mileage':
+    eff>45?'Some harsh events reducing mileage':
+    'Aggressive riding — significant mileage loss';
+  document.getElementById('kcur').textContent=m.predicted_kmpl;
+  document.getElementById('kpot').textContent=m.potential_kmpl;
+  document.getElementById('mmodel').textContent=m.model_used||'—';
+  document.getElementById('mstyle').textContent=m.rider_style||'—';
+
+  document.getElementById('tips-list').innerHTML=(m.tips||[]).map(t=>
+    `<div class="tip"><div class="tdot" style="background:${mc};"></div><span>${t}</span></div>`
+  ).join('');
+
+  // Explanation
+  const ec=['var(--r)','var(--a)','var(--bl)'];
+  document.getElementById('explist').innerHTML=(r.explanation||[]).map((e,i)=>
+    `<div class="erow"><div class="en">${i+1}</div><div class="ed" style="background:${ec[i]};"></div><div class="et">${e}</div></div>`
+  ).join('');
+
+  // Stats
+  st.n++;st.rs+=sc;st.ks+=m.predicted_kmpl;
+  if(lv==='HIGH')st.al++;
+  const ar=Math.round(st.rs/st.n),ak=Math.round(st.ks/st.n*10)/10;
+  document.getElementById('s-n').textContent=st.n;
+  document.getElementById('s-r').textContent=ar;
+  document.getElementById('s-r').style.color=ar>60?'var(--r)':ar>35?'var(--a)':'var(--g)';
+  document.getElementById('s-k').textContent=ak;
+  document.getElementById('s-a').textContent=st.al;
+
+  // History
+  const now=new Date(),t=now.toTimeString().slice(0,8);
+  hist.unshift({t,sc,lv,kmpl:m.predicted_kmpl});
+  if(hist.length>10)hist.pop();
+  document.getElementById('history').innerHTML=hist.map(h=>{
+    const c=h.lv==='LOW'?'var(--g)':h.lv==='MODERATE'?'var(--a)':'var(--r)';
+    return`<div class="hr2"><div class="ht">${h.t}</div><div class="hs" style="color:${c};">${h.sc}</div><div class="htr"><div class="hf" style="width:${h.sc}%;background:${c};"></div></div><div class="hl" style="color:${c};">${h.lv}</div><div class="hk">${h.kmpl} kpl</div></div>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
