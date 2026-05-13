@@ -7,13 +7,14 @@ when the terminal shows https:some address click it .go to advance and click to 
     --->streamlit run streamlit_app.py
 5. deploy in hugging face
 
+
 # RideGuard — Two-Wheeler Riding Risk & Mileage Monitor
 
 Real-time motorcycle safety scoring and fuel efficiency analysis using machine learning, smartphone sensors, and GPS.
 
 ---
 
-## What It Does
+## 🎯 What It Does
 
 RideGuard reads accelerometer and gyroscope data from your phone while riding and gives you:
 
@@ -27,81 +28,79 @@ RideGuard reads accelerometer and gyroscope data from your phone while riding an
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
-Copy
-
-Insert at cursor
+```
 rideguard/
 ├── flash_app/
-│ ├── App.py ← Flask web server + ML inference
-│ └── static/
-│ └── index.html ← Web dashboard (phone + desktop)
+│   ├── App.py                    ← Flask web server + ML inference
+│   └── static/
+│       └── index.html            ← Web dashboard (phone + desktop)
 ├── ml/
-│ ├── train_model.py ← XGBoost + IsolationForest training
-│ ├── train_mileage.py ← GradientBoosting + KMeans training
-│ ├── build_mileage_dataset.py ← Merges Nairobi + Kaggle data
-│ ├── load_data.py ← Loads and combines raw datasets
-│ ├── features.py ← Feature engineering functions
-│ ├── api.py ← FastAPI service (JSON only)
-│ └── pipeline.py ← Sklearn pipeline builder
+│   ├── train_model.py            ← XGBoost + IsolationForest training
+│   ├── train_mileage.py          ← GradientBoosting + KMeans training
+│   ├── build_mileage_dataset.py  ← Merges Nairobi + Kaggle data
+│   ├── load_data.py              ← Loads and combines raw datasets
+│   ├── features.py               ← Feature engineering functions
+│   ├── api.py                    ← FastAPI service (JSON only)
+│   └── pipeline.py               ← Sklearn pipeline builder
 ├── data/
-│ ├── kaggle/ ← Harsh driving sensor CSVs
-│ ├── motorcycle/ ← Fall + manoeuvre sensor CSVs
-│ ├── nairobi/ ← Real fuel consumption data
-│ ├── combined_dataset.csv
-│ ├── featured_dataset.csv
-│ └── mileage_dataset.csv
-├── models/ ← Saved .pkl model files
+│   ├── kaggle/                   ← Harsh driving sensor CSVs
+│   ├── motorcycle/               ← Fall + manoeuvre sensor CSVs
+│   ├── nairobi/                  ← Real fuel consumption data
+│   ├── combined_dataset.csv
+│   ├── featured_dataset.csv
+│   └── mileage_dataset.csv
+├── models/                       ← Saved .pkl model files
 ├── notebooks/
-│ └── eda.ipynb ← Exploratory data analysis
+│   └── eda.ipynb                 ← Exploratory data analysis
 ├── requirements.txt
 └── README.md
-
+```
 
 ---
 
-## Datasets Used
+## 📊 Datasets Used
 
 ### 1. Harsh Driving Sensor Dataset (Kaggle)
-- Source: `saboorahmad47/harsh-driving-dataset`
+- **Source:** `saboorahmad47/harsh-driving-dataset`
 - Real smartphone accelerometer + gyroscope readings
 - Event classes: safe, sudden-acc, sudden-brake, sudden-turn, line-change
-- Used for: risk classification training
+- **Used for:** risk classification training
 
 ### 2. Motorcycle Falls + Manoeuvres Dataset
 - Real IMU sensor data from motorcycle falls and extreme manoeuvres
 - Fall events → HIGH risk label
 - Manoeuvres → MODERATE risk label
-- Used for: risk classification training
+- **Used for:** risk classification training
 
 ### 3. Nairobi Motorcycle Transit Dataset
-- Source: Mendeley Data, doi:10.17632/nv3rkn24zv.1
+- **Source:** Mendeley Data, doi:10.17632/nv3rkn24zv.1
 - 107 real petrol motorcycles, GPS tracked in Nairobi
 - Real fuel consumption measured per trip (litres used, km driven)
-- `actual_kmpl = distance_km / fuel_amount_l`
-- Used for: mileage model ground truth
+- Formula: `actual_kmpl = distance_km / fuel_amount_l`
+- **Used for:** mileage model ground truth
 
 ---
 
-## ML Models
+## 🤖 ML Models
 
 | Model | Purpose | Performance |
-|---|---|---|
-| XGBoost Classifier | Risk level prediction (LOW/MODERATE/HIGH) | ~89% accuracy |
-| Isolation Forest | Anomaly detection (unusual riding patterns) | Unsupervised |
-| Gradient Boosting Regressor | Mileage efficiency prediction | MAE=0.81 kmpl, R²=0.94 |
-| K-Means Clustering | Rider style classification | 4 clusters |
-| SHAP TreeExplainer | Explains why each prediction was made | Top 3 features |
+|-------|---------|-------------|
+| **XGBoost Classifier** | Risk level prediction (LOW/MODERATE/HIGH) | ~89% accuracy |
+| **Isolation Forest** | Anomaly detection (unusual riding patterns) | Unsupervised |
+| **Gradient Boosting Regressor** | Mileage efficiency prediction | MAE=0.81 kmpl, R²=0.94 |
+| **K-Means Clustering** | Rider style classification | 4 clusters |
+| **SHAP TreeExplainer** | Explains why each prediction was made | Top 3 features |
 
 ---
 
-## Features Engineered
+## 🔧 Features Engineered
 
-From raw `accel_x/y/z` and `gyro_x/y/z`:
+From raw `accel_x/y/z` and `gyro_x/y/z` sensor data:
 
 | Feature | Description |
-|---|---|
+|---------|-------------|
 | `accel_mag` | Resultant acceleration magnitude √(x²+y²+z²) |
 | `gyro_mag` | Resultant gyroscope magnitude |
 | `jerk` | Change in accel_mag between consecutive readings |
@@ -113,81 +112,86 @@ From raw `accel_x/y/z` and `gyro_x/y/z`:
 | `harsh_brake_flag` | 1 if accel_y < −5 m/s² |
 | `harsh_turn_flag` | 1 if gyro_mag > 1.5 rad/s |
 
-Thresholds based on: SAE 2019-26-0143 (Indian urban two-wheeler study)
+**Thresholds based on:** SAE 2019-26-0143 (Indian urban two-wheeler study)
 
 ---
 
-## Risk Score Explained
+## 📈 Risk Score Explained
 
 The risk score is a **0–100 danger scale**, not model confidence:
 
-
-Copy
-
-Insert at cursor
+```
 risk_score = p_LOW × 16 + p_MODERATE × 50 + p_HIGH × 84
+```
 
-
-- Pure LOW → score ~16 (green zone 0–33)
-- Pure MODERATE → score ~50 (amber zone 34–66)
-- Pure HIGH → score ~84 (red zone 67–100)
+**Zone Breakdown:**
+- Pure **LOW** → score ~16 (green zone: 0–33)
+- Pure **MODERATE** → score ~50 (amber zone: 34–66)
+- Pure **HIGH** → score ~84 (red zone: 67–100)
 - Mixed signals → score interpolates proportionally
 
 A **sliding window of 5 readings** is averaged to reduce false positives from single sensor spikes.
 
 ---
 
-## Installation
+## 🚀 Installation & Setup
 
+### Prerequisites
 ```bash
 cd rideguard
 pip install -r requirements.txt
+```
 
-Copy
+### Step 1: Train Models (First Time Only)
 
-Insert at cursor
-Running
-Step 1 — Train Models (first time only)
+```bash
 cd ml
 python build_mileage_dataset.py
 python train_model.py
 python train_mileage.py
+```
 
-Copy
+**Time:** 10–15 minutes. Models saved to `models/` directory.
 
-Insert at cursor
-bash
-Takes 10–15 minutes. Models saved to models/.
+### Step 2: Start Web App
 
-Step 2 — Start Web App
+```bash
 cd flash_app
 python App.py
+```
 
-Copy
+**Access URLs:**
+- Desktop: `http://127.0.0.1:5000`
+- Phone (same WiFi): `http://YOUR_IP:5000` (IP printed on startup)
 
-Insert at cursor
-bash
-Desktop: http://127.0.0.1:5000
+### Step 3: Use on Phone
 
-Phone (same WiFi): http://YOUR_IP:5000 — actual IP printed on startup
+1. Open the network URL on your Android phone
+2. Tap "Phone Sensor" — reads accelerometer + gyroscope automatically
+3. GPS speed is captured automatically
+4. Predictions run every 5 seconds while riding
 
-Step 3 — Use on Phone
-Open the network URL on your Android phone
+### (Optional) Run Streamlit App
 
-Tap Phone Sensor — reads accelerometer + gyroscope automatically
+```bash
+streamlit run streamlit_app.py
+```
 
-GPS speed captured automatically
+---
 
-Predictions run every 5 seconds while riding
+## 🔌 API Endpoints (Flask)
 
-API Endpoints (Flask)
-Endpoint	Method	Description
-/	GET	Web dashboard
-/health	GET	API status
-/bikes	GET	Supported bike list
-/predict	POST	Predict risk + mileage
-/reset	POST	Clear session buffer
-POST /predict — Request
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Web dashboard |
+| `/health` | GET | API status |
+| `/bikes` | GET | Supported bike list |
+| `/predict` | POST | Predict risk + mileage |
+| `/reset` | POST | Clear session buffer |
+
+### POST /predict — Request
+
+```json
 {
   "accel_x": 0.5,
   "accel_y": 0.2,
@@ -200,14 +204,13 @@ POST /predict — Request
   "base_kmpl": 60,
   "session_id": "abc123"
 }
+```
 
-Copy
+**Notes:** `speed` and `session_id` are optional.
 
-Insert at cursor
-json
-speed and session_id are optional.
+### POST /predict — Response
 
-POST /predict — Response
+```json
 {
   "risk_level": "LOW",
   "risk_score": 18,
@@ -220,7 +223,11 @@ POST /predict — Response
     "Sharp rotation detected",
     "Sudden movement change detected"
   ],
-  "probabilities": { "low": 0.872, "moderate": 0.098, "high": 0.030 },
+  "probabilities": { 
+    "low": 0.872, 
+    "moderate": 0.098, 
+    "high": 0.030 
+  },
   "mileage": {
     "predicted_kmpl": 54.0,
     "potential_kmpl": 57.0,
@@ -232,55 +239,68 @@ POST /predict — Response
     "data_source": "Nairobi Motorcycle Dataset + Indian research"
   }
 }
+```
 
-Copy
+---
 
-Insert at cursor
-json
-FastAPI Service (JSON only, no UI)
+## 📡 FastAPI Service (JSON Only, No UI)
+
+```bash
 cd ml
 uvicorn api:app --host 0.0.0.0 --port 8000 --reload
+```
 
-Copy
+**Access:** http://localhost:8000/docs
 
-Insert at cursor
-bash
-Docs: http://localhost:8000/docs
+**Supports:**
+- `/predict` (single reading)
+- `/predict/batch` (multiple readings)
 
-Supports /predict (single) and /predict/batch (multiple readings).
+---
 
-Supported Bikes
+## 🏍️ Supported Bikes
+
 Pre-loaded with ARAI certified base mileage figures:
 
-Bike	Base kmpl	CC
-Honda Activa	60	110
-Hero Splendor	65	100
-Hero HF Deluxe	67	100
-Bajaj Pulsar 150	45	150
-Royal Enfield 350	30	350
-Yamaha R15	40	155
-KTM Duke 200	35	200
-Ola S1 Pro	80	EV
-Ather 450X	85	EV
-You can also type any bike name and enter your own base kmpl manually.
+| Bike | Base kmpl | CC |
+|------|-----------|-----|
+| Honda Activa | 60 | 110 |
+| Hero Splendor | 65 | 100 |
+| Hero HF Deluxe | 67 | 100 |
+| Bajaj Pulsar 150 | 45 | 150 |
+| Royal Enfield 350 | 30 | 350 |
+| Yamaha R15 | 40 | 155 |
+| KTM Duke 200 | 35 | 200 |
+| Ola S1 Pro | 80 | EV |
+| Ather 450X | 85 | EV |
 
-Known Limitations
-GPS speed requires outdoor use — indoors shows 0 kmph
+**Custom Bikes:** You can also type any bike name and enter your own base kmpl manually.
 
-Phone sensor requires HTTPS on iOS (Android works on HTTP)
+---
 
-Jerk calculation needs at least 2 consecutive readings to be accurate
+## ⚠️ Known Limitations
 
-Mileage model trained on Nairobi data — speed patterns may differ slightly for Indian highways
+- **GPS Speed:** Requires outdoor use — indoors shows 0 kmph
+- **iOS Sensor:** Requires HTTPS (Android works on HTTP)
+- **Jerk Calculation:** Needs at least 2 consecutive readings to be accurate
+- **Mileage Model:** Trained on Nairobi data — speed patterns may differ slightly for Indian highways
 
-Tech Stack
-Backend: Python, Flask, FastAPI
+---
 
-ML: XGBoost, Scikit-learn, SHAP, Optuna
+## 🛠️ Tech Stack
 
-Frontend: Vanilla HTML/CSS/JS — no framework, works on any phone browser
+| Component | Technology |
+|-----------|------------|
+| **Backend** | Python, Flask, FastAPI |
+| **ML/AI** | XGBoost, Scikit-learn, SHAP, Optuna |
+| **Frontend** | Vanilla HTML/CSS/JS (no framework) |
+| **Sensors** | Web DeviceMotion API (accelerometer + gyroscope) |
+| **GPS** | Web Geolocation API |
 
-Sensors: Web DeviceMotion API (accelerometer + gyroscope)
+---
 
-GPS: Web Geolocation API
+## 🌐 Deployment
+
+**Hugging Face Deployment:**
+Deploy the Streamlit app or Flask server to Hugging Face Spaces for live hosting.
 
